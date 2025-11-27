@@ -1,4 +1,4 @@
-﻿# ðŸŒ³ Grow Tree SUI
+Grow Tree SUI
 
 A viral prize pool game on SUI blockchain. Water the tree to grow it - the player who completes it wins 50%!
 
