@@ -66,12 +66,12 @@ export default function KenoPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-forest-400">Total Won</span>
-                <span className="text-green-400">{totalWon.toLocaleString()}</span>
+                <span className={totalWon > 0 ? 'text-green-400' : 'text-forest-200'}>{totalWon.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-forest-400">Net Profit</span>
-                <span className={totalWon - (gamesPlayed * 10) >= 0 ? 'text-green-400' : 'text-red-400'}>
-                  {(balance - 1000) >= 0 ? '+' : ''}{(balance - 1000).toLocaleString()}
+                <span className={balance - 1000 > 0 ? 'text-green-400' : balance - 1000 < 0 ? 'text-red-400' : 'text-forest-200'}>
+                  {balance - 1000 > 0 ? '+' : ''}{(balance - 1000).toLocaleString()}
                 </span>
               </div>
             </div>
