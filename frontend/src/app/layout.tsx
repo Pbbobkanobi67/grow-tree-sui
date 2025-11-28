@@ -6,8 +6,8 @@ import { Providers } from '@/components/Providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Grow Tree SUI | Water the Tree, Win the Prize!',
-  description: 'A viral prize pool game on SUI blockchain.',
+  title: 'Grove Games | Water the Tree, Win the Prize!',
+  description: 'Race to grow the tree and claim the canopy prize on SUI blockchain.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

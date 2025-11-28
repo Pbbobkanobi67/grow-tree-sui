@@ -1,4 +1,4 @@
-﻿/// Tree Watering Prize Pool Game
+/// Tree Watering Prize Pool Game
 module tree_game::tree_game {
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
@@ -185,7 +185,7 @@ module tree_game::tree_game {
 
     fun get_phase_info(game: &TreeGame, config: &GameConfig): (u8, u64) {
         let progress_bps = (game.growth_progress * BASIS_POINTS) / config.maturity_threshold;
-        
+
         if (progress_bps < 3000) {
             (1, (progress_bps * 100) / 3000)
         } else if (progress_bps < 6000) {

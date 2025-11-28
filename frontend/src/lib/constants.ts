@@ -1,4 +1,4 @@
-﻿export const CONTRACT_CONFIG = {
+export const CONTRACT_CONFIG = {
   PACKAGE_ID: process.env.NEXT_PUBLIC_PACKAGE_ID || '',
   GAME_CONFIG_ID: process.env.NEXT_PUBLIC_GAME_CONFIG_ID || '',
   TREE_GAME_ID: process.env.NEXT_PUBLIC_TREE_GAME_ID || '',
@@ -7,10 +7,10 @@
 export const NETWORK = (process.env.NEXT_PUBLIC_SUI_NETWORK || 'testnet') as 'devnet' | 'testnet' | 'mainnet';
 
 export const PHASES = {
-  1: { name: 'Seedling', emoji: 'ðŸŒ±', color: 'text-green-400', bgColor: 'bg-green-100' },
-  2: { name: 'Growing', emoji: 'ðŸŒ¿', color: 'text-green-500', bgColor: 'bg-green-200' },
-  3: { name: 'Maturing', emoji: 'ðŸŒ³', color: 'text-green-600', bgColor: 'bg-green-300' },
-  4: { name: 'Final Stretch', emoji: 'ðŸ”¥', color: 'text-yellow-500', bgColor: 'bg-yellow-100' },
+  1: { name: 'Seedling', emoji: '', color: 'text-green-400', bgColor: 'bg-green-100' },
+  2: { name: 'Growing', emoji: '', color: 'text-green-500', bgColor: 'bg-green-200' },
+  3: { name: 'Maturing', emoji: '', color: 'text-green-600', bgColor: 'bg-green-300' },
+  4: { name: 'Final Stretch', emoji: '', color: 'text-yellow-500', bgColor: 'bg-yellow-100' },
 } as const;
 
 export const formatSui = (mist: bigint | number): string => {

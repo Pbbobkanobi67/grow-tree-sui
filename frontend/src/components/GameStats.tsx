@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { formatSui, formatAddress } from '@/lib/constants';
 import { GameState, GameConfig } from '@/hooks/useGameState';
@@ -10,54 +10,55 @@ interface GameStatsProps {
 
 export function GameStats({ gameState, gameConfig }: GameStatsProps) {
   if (!gameState) {
-    return <div className="animate-pulse h-48 bg-gray-200 rounded-xl" />;
+    return <div className="animate-pulse h-48 bg-forest-800/50 rounded-xl" />;
   }
 
-  const estimatedPrize = gameConfig 
+  const estimatedPrize = gameConfig
     ? (gameState.prizePool * BigInt(5000)) / BigInt(10000)
     : BigInt(0);
 
   return (
     <div className="space-y-4">
       {/* Prize Pool */}
-      <div className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-2xl p-6 shadow-lg">
-        <div className="text-yellow-700 font-medium mb-1">ðŸ’° Prize Pool</div>
-        <div className="text-3xl font-bold text-yellow-800">
+      <div className="bg-forest-800/50 rounded-2xl p-6 gold-glow">
+        <div className="text-gold-400 font-medium mb-1">Prize Pool</div>
+        <div className="text-4xl font-bold text-gold-300 text-glow-gold">
           {formatSui(gameState.prizePool)}
         </div>
-        <div className="text-sm text-yellow-600 mt-1">
+        <div className="text-sm text-gold-500 mt-2">
           Winner gets: ~{formatSui(estimatedPrize)}
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white rounded-xl p-4 shadow">
-          <div className="text-gray-500 text-sm">ðŸ† Round</div>
-          <div className="text-2xl font-bold">#{gameState.round}</div>
+        <div className="bg-forest-800/50 rounded-xl p-4 border border-forest-600/50 card-glow">
+          <div className="text-forest-400 text-sm">Round</div>
+          <div className="text-2xl font-bold text-forest-200">#{gameState.round}</div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow">
-          <div className="text-gray-500 text-sm">ðŸ‘¥ Players</div>
-          <div className="text-2xl font-bold">{gameState.uniquePlayers}</div>
+        <div className="bg-forest-800/50 rounded-xl p-4 border border-forest-600/50 card-glow">
+          <div className="text-forest-400 text-sm">Players</div>
+          <div className="text-2xl font-bold text-forest-200">{gameState.uniquePlayers}</div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow col-span-2">
-          <div className="text-gray-500 text-sm">ðŸ’§ Total Waterings</div>
-          <div className="text-2xl font-bold">{gameState.totalWaterings}</div>
+        <div className="bg-forest-800/50 rounded-xl p-4 border border-forest-600/50 card-glow col-span-2">
+          <div className="text-forest-400 text-sm">Total Waterings</div>
+          <div className="text-2xl font-bold text-forest-200">{gameState.totalWaterings}</div>
         </div>
       </div>
 
       {/* Top Contributors */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg">
-        <h3 className="font-bold text-lg mb-4">ðŸ… Top Contributors</h3>
+      <div className="bg-forest-800/50 rounded-2xl p-6 border border-forest-600/50 card-glow">
+        <h3 className="font-bold text-lg mb-4 text-forest-300">Top Contributors</h3>
         <div className="space-y-2">
           {[
-            { place: 'ðŸ¥‡', addr: gameState.top1Address, amt: gameState.top1Amount },
-            { place: 'ðŸ¥ˆ', addr: gameState.top2Address, amt: gameState.top2Amount },
-            { place: 'ðŸ¥‰', addr: gameState.top3Address, amt: gameState.top3Amount },
-          ].map(({ place, addr, amt }) => (
-            <div key={place} className="flex justify-between items-center py-2 border-b last:border-0">
-              <span>{place} {formatAddress(addr)}</span>
-              <span className="font-medium">{formatSui(amt)}</span>
+            { place: '1st', addr: gameState.top1Address, amt: gameState.top1Amount, color: 'text-gold-400' },
+            { place: '2nd', addr: gameState.top2Address, amt: gameState.top2Amount, color: 'text-gray-300' },
+            { place: '3rd', addr: gameState.top3Address, amt: gameState.top3Amount, color: 'text-orange-400' },
+          ].map(({ place, addr, amt, color }) => (
+            <div key={place} className="flex justify-between items-center py-2 border-b border-forest-600/30 last:border-0">
+              <span className={`${color} font-medium`}>{place}</span>
+              <span className="text-forest-300">{formatAddress(addr)}</span>
+              <span className="font-medium text-forest-200">{formatSui(amt)}</span>
             </div>
           ))}
         </div>

@@ -1,20 +1,89 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 240, 253, 244;
+  --forest-900: #0d1f17;
+  --forest-800: #1a4731;
+  --forest-700: #1e5631;
+  --forest-600: #276749;
+  --forest-300: #34d399;
+  --gold-500: #d4a017;
+  --gold-400: #eab308;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, rgb(240, 249, 255), rgb(240, 253, 244));
+  color: #f7fafc;
+  background: linear-gradient(180deg, var(--forest-900) 0%, var(--forest-800) 50%, var(--forest-900) 100%);
   min-height: 100vh;
 }
 
+/* Green text glow effect */
+.text-glow {
+  text-shadow: 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(52, 211, 153, 0.3);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(212, 160, 23, 0.5), 0 0 20px rgba(212, 160, 23, 0.3);
+}
+
+/* Card with green glow */
+.card-glow {
+  box-shadow: 0 0 30px rgba(52, 211, 153, 0.2);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 40px rgba(52, 211, 153, 0.4);
+}
+
+/* Gold glow for prize pool */
+.gold-glow {
+  box-shadow: 0 0 30px rgba(212, 160, 23, 0.3);
+  border: 1px solid rgba(212, 160, 23, 0.4);
+}
+
+/* Gradient button */
+.btn-gradient {
+  background: linear-gradient(45deg, var(--forest-300), var(--gold-500));
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(52, 211, 153, 0.5);
+}
+
+.btn-gradient:disabled {
+  opacity: 0.5;
+  transform: none;
+}
+
+/* Shimmer effect for buttons */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Tree animation */
 .tree-glow {
-  box-shadow: 0 0 60px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 60px rgba(52, 211, 153, 0.4);
 }
 
 .final-stretch-glow {
@@ -22,10 +91,11 @@ body {
 }
 
 @keyframes final-glow {
-  from { box-shadow: 0 0 30px rgba(255, 215, 0, 0.4); }
-  to { box-shadow: 0 0 60px rgba(255, 215, 0, 0.8); }
+  from { box-shadow: 0 0 30px rgba(212, 160, 23, 0.4); }
+  to { box-shadow: 0 0 60px rgba(212, 160, 23, 0.8); }
 }
 
+/* Water drop animation */
 .water-drop {
   animation: drop 0.6s ease-in forwards;
 }
@@ -33,4 +103,22 @@ body {
 @keyframes drop {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(100px); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--forest-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--forest-600);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--forest-300);
 }
