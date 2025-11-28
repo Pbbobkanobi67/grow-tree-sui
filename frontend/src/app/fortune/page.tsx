@@ -27,7 +27,7 @@ export default function FortunePage() {
   const realAccount = useCurrentAccount();
 
   // Dev wallet
-  const { selectedWallet: devWallet, balance: devBalance, setBalance: setDevBalance } = useDevWallet();
+  const { selectedWallet: devWallet, balance: devBalance, adjustBalance } = useDevWallet();
 
   // Use dev wallet in DEV_MODE
   const activeAddress = DEV_MODE ? devWallet?.address : realAccount?.address;
@@ -45,16 +45,16 @@ export default function FortunePage() {
       ...prev.slice(0, 9), // Keep last 10
     ]);
 
-    // Update balance in dev mode
-    if (DEV_MODE && setDevBalance) {
-      setDevBalance(prev => prev + profit);
+    // Update balance in dev mode (add back winnings)
+    if (DEV_MODE) {
+      adjustBalance(winAmount);
     }
   };
 
   const handleSpinStart = () => {
     // Deduct bet when starting spin
-    if (DEV_MODE && setDevBalance) {
-      setDevBalance(prev => prev - selectedBet);
+    if (DEV_MODE) {
+      adjustBalance(-selectedBet);
     }
   };
 

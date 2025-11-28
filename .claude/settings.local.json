@@ -20,7 +20,8 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nCheckpoint: Grove Games MVP with dark forest theme\n\nFeatures:\n- Rebranded to Grove Games with forest theme\n- Animated tree visualization (seedling to full tree)\n- Phase progress indicator with CTAs\n- Water button with droplet animation\n- Docs page with $TREE mascot\n- Testnet faucet button\n- Contract deployed to SUI testnet\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git commit:*)",
       "Bash(git push)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "WebFetch(domain:grow-tree-sui.vercel.app)"
     ],
     "deny": [],
     "ask": []

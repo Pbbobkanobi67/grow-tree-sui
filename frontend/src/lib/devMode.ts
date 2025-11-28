@@ -198,6 +198,14 @@ export function mockFaucet(address: string, amount: bigint = BigInt(1000) * BigI
   mockBalances[address] += amount;
 }
 
+// Adjust balance by delta (positive or negative)
+export function adjustMockBalance(address: string, delta: bigint): void {
+  if (!mockBalances[address]) {
+    mockBalances[address] = BigInt(10000000) * BigInt(1000000000); // Default 10M SUI
+  }
+  mockBalances[address] += delta;
+}
+
 export function startNewRound(): void {
   // Start a new round keeping round counter and 20% prize pool carryover
   const carryoverPrize = (mockState.prizePool * BigInt(20)) / BigInt(100); // 20% carries over to seed next round

@@ -2,7 +2,7 @@
 
 import { useState, createContext, useContext, ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { DEV_MODE, getMockBalance, mockFaucet } from '@/lib/devMode';
+import { DEV_MODE, getMockBalance, mockFaucet, adjustMockBalance } from '@/lib/devMode';
 import { formatSui } from '@/lib/constants';
 
 // Dev wallet addresses (fake but consistent)
@@ -21,6 +21,7 @@ interface DevWalletContextType {
   balance: bigint;
   refreshBalance: () => void;
   addFunds: (amount: bigint) => void;
+  adjustBalance: (delta: bigint) => void;
 }
 
 const DevWalletContext = createContext<DevWalletContextType | null>(null);
@@ -48,6 +49,13 @@ export function DevWalletProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const adjustBalance = (delta: bigint) => {
+    if (selectedWallet) {
+      adjustMockBalance(selectedWallet.address, delta);
+      refreshBalance();
+    }
+  };
+
   return (
     <DevWalletContext.Provider
       value={{
@@ -56,6 +64,7 @@ export function DevWalletProvider({ children }: { children: ReactNode }) {
         balance,
         refreshBalance,
         addFunds,
+        adjustBalance,
       }}
     >
       {children}
