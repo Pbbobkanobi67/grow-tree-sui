@@ -34,6 +34,18 @@ const games = [
     badgeColor: 'bg-amber-500',
   },
   {
+    id: 'keno',
+    title: 'Acorn Keno',
+    description: 'Pick your lucky acorns and watch the forest reveal your fortune! Win up to 100x your bet.',
+    href: '/keno',
+    icon: '🌰',
+    color: 'from-yellow-600/20 to-amber-700/20',
+    borderColor: 'border-yellow-600/50',
+    hoverBorder: 'hover:border-yellow-500',
+    badge: 'LIVE',
+    badgeColor: 'bg-yellow-600',
+  },
+  {
     id: 'harvest',
     title: 'Harvest Season',
     description: 'Coming soon: Seasonal events with limited-time rewards and exclusive NFT drops.',
@@ -142,7 +154,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-forest-300 text-center mb-8">Ecosystem Stats</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { label: 'Games Live', value: '2', icon: '🎮' },
+              { label: 'Games Live', value: '3', icon: '🎮' },
               { label: 'Coming Soon', value: '1+', icon: '🚀' },
               { label: 'Network', value: 'SUI', icon: '⛓️' },
               { label: 'Token', value: '$TREE', icon: '🌳' },
@@ -169,6 +181,12 @@ export default function Home() {
             className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-full font-medium transition-all flex items-center gap-2"
           >
             <span>🎰</span> Spin the Wheel
+          </Link>
+          <Link
+            href="/keno"
+            className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white rounded-full font-medium transition-all flex items-center gap-2"
+          >
+            <span>🌰</span> Acorn Keno
           </Link>
           <Link
             href="/docs"

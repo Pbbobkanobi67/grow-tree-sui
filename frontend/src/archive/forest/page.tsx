@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Header } from '@/components/Header';
-import { FroggerGame } from '@/components/FroggerGame';
+import { FroggerGame } from '../FroggerGame';
 
 export default function ForestPage() {
   const [highScore, setHighScore] = useState(0);
