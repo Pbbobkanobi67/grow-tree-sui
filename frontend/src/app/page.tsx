@@ -35,16 +35,15 @@ const games = [
   },
   {
     id: 'forest',
-    title: 'Forest Battles',
-    description: 'Coming soon: PvP battles where players compete for territory in the enchanted forest.',
-    href: '#',
-    icon: '⚔️',
-    color: 'from-purple-500/20 to-violet-600/20',
-    borderColor: 'border-purple-500/30',
-    hoverBorder: 'hover:border-purple-400',
-    badge: 'SOON',
-    badgeColor: 'bg-purple-600',
-    disabled: true,
+    title: 'Forest Crossing',
+    description: 'Help the frog hop across logs and dodge cars to reach the Enchanted Forest! Classic arcade fun.',
+    href: '/forest',
+    icon: '🐸',
+    color: 'from-emerald-500/20 to-green-600/20',
+    borderColor: 'border-emerald-500/50',
+    hoverBorder: 'hover:border-emerald-400',
+    badge: 'LIVE',
+    badgeColor: 'bg-emerald-500',
   },
   {
     id: 'harvest',
@@ -155,8 +154,8 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-forest-300 text-center mb-8">Ecosystem Stats</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { label: 'Games Live', value: '2', icon: '🎮' },
-              { label: 'Coming Soon', value: '2+', icon: '🚀' },
+              { label: 'Games Live', value: '3', icon: '🎮' },
+              { label: 'Coming Soon', value: '1+', icon: '🚀' },
               { label: 'Network', value: 'SUI', icon: '⛓️' },
               { label: 'Token', value: '$TREE', icon: '🌳' },
             ].map((stat) => (
@@ -182,6 +181,12 @@ export default function Home() {
             className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-full font-medium transition-all flex items-center gap-2"
           >
             <span>🎰</span> Spin the Wheel
+          </Link>
+          <Link
+            href="/forest"
+            className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full font-medium transition-all flex items-center gap-2"
+          >
+            <span>🐸</span> Forest Crossing
           </Link>
           <Link
             href="/docs"

@@ -48,6 +48,19 @@ const NAV_ITEMS: NavItem[] = [
       activeText: 'text-white',
     },
   },
+  {
+    href: '/forest',
+    label: 'Forest',
+    badge: 'FOREST',
+    color: {
+      bg: 'bg-emerald-900/50',
+      bgHover: 'hover:bg-emerald-800/50',
+      text: 'text-emerald-200',
+      border: 'border-emerald-600/50',
+      activeBg: 'bg-emerald-600',
+      activeText: 'text-white',
+    },
+  },
 ];
 
 const UTILITY_ITEMS: NavItem[] = [
