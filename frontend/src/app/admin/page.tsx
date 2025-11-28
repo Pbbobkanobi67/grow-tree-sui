@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { motion } from 'framer-motion';
+import { Header } from '@/components/Header';
 import { useGameState, useGameConfig } from '@/hooks/useGameState';
 import { formatSui, formatAddress } from '@/lib/constants';
 import { DEV_MODE, startNewRound, resetMockState, getMockGameState } from '@/lib/devMode';
@@ -92,25 +92,7 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-lg bg-forest-900/80 border-b border-forest-600/50">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="font-bold text-2xl text-glow">
-              <span className="text-forest-300">GROVE</span>{' '}<span className="text-blue-400">GAMES</span>
-            </Link>
-            <span className="text-xs px-2 py-1 bg-red-600 text-white rounded-full">
-              ADMIN
-            </span>
-          </div>
-          <Link
-            href="/"
-            className="px-4 py-2 rounded-full text-sm font-medium bg-forest-700 text-forest-200 border border-forest-600 hover:bg-forest-600 transition-all"
-          >
-            Back to Game
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Access Check */}

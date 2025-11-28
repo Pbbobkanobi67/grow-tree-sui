@@ -1,222 +1,195 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ConnectButton, useCurrentAccount, useSuiClientQuery } from '@mysten/dapp-kit';
-import { useQueryClient } from '@tanstack/react-query';
-import { TreeVisualization } from '@/components/TreeVisualization';
-import { WaterButton } from '@/components/WaterButton';
-import { GameStats } from '@/components/GameStats';
-import { WinnerCelebration } from '@/components/WinnerCelebration';
-import { useGameState, useGameConfig } from '@/hooks/useGameState';
-import { FaucetButton } from '@/components/FaucetButton';
-import { LiveFeed } from '@/components/LiveFeed';
+import { motion } from 'framer-motion';
+import { ConnectButton, useCurrentAccount } from '@mysten/dapp-kit';
+import { Header } from '@/components/Header';
 import { DevWalletSelector, useDevWallet } from '@/components/DevWalletSelector';
-import { CONTRACT_CONFIG, NETWORK, formatSui } from '@/lib/constants';
-import { DEV_MODE, startNewRound } from '@/lib/devMode';
+import { DEV_MODE } from '@/lib/devMode';
+
+const games = [
+  {
+    id: 'grow',
+    title: 'Grow Tree',
+    description: 'Water the community tree and compete for the prize pool. Multiple winners share rewards when the tree reaches maturity!',
+    href: '/grow',
+    icon: '🌳',
+    color: 'from-green-500/20 to-emerald-600/20',
+    borderColor: 'border-green-500/50',
+    hoverBorder: 'hover:border-green-400',
+    badge: 'LIVE',
+    badgeColor: 'bg-green-500',
+  },
+  {
+    id: 'fortune',
+    title: 'Tree of Fortune',
+    description: 'Spin the wheel and test your luck! Win up to 10x your bet with realistic casino odds.',
+    href: '/fortune',
+    icon: '🎰',
+    color: 'from-amber-500/20 to-gold-600/20',
+    borderColor: 'border-amber-500/50',
+    hoverBorder: 'hover:border-amber-400',
+    badge: 'LIVE',
+    badgeColor: 'bg-amber-500',
+  },
+  {
+    id: 'forest',
+    title: 'Forest Battles',
+    description: 'Coming soon: PvP battles where players compete for territory in the enchanted forest.',
+    href: '#',
+    icon: '⚔️',
+    color: 'from-purple-500/20 to-violet-600/20',
+    borderColor: 'border-purple-500/30',
+    hoverBorder: 'hover:border-purple-400',
+    badge: 'SOON',
+    badgeColor: 'bg-purple-600',
+    disabled: true,
+  },
+  {
+    id: 'harvest',
+    title: 'Harvest Season',
+    description: 'Coming soon: Seasonal events with limited-time rewards and exclusive NFT drops.',
+    href: '#',
+    icon: '🍂',
+    color: 'from-orange-500/20 to-red-600/20',
+    borderColor: 'border-orange-500/30',
+    hoverBorder: 'hover:border-orange-400',
+    badge: 'SOON',
+    badgeColor: 'bg-orange-600',
+    disabled: true,
+  },
+];
 
 export default function Home() {
-  const queryClient = useQueryClient();
-  const [showCelebration, setShowCelebration] = useState(false);
-
-  // Real wallet (only used when not in DEV_MODE)
+  // Real wallet
   const realAccount = useCurrentAccount();
 
-  // Dev wallet (only used in DEV_MODE)
-  const { selectedWallet: devWallet, balance: devBalance } = useDevWallet();
+  // Dev wallet
+  const { selectedWallet: devWallet } = useDevWallet();
 
-  // Use dev wallet in DEV_MODE, otherwise use real wallet
-  const activeAddress = DEV_MODE ? devWallet?.address : realAccount?.address;
+  // Use dev wallet in DEV_MODE
   const isConnected = DEV_MODE ? !!devWallet : !!realAccount;
-
-  const { data: gameState, isLoading: stateLoading } = useGameState();
-  const { data: gameConfig, isLoading: configLoading } = useGameConfig();
-
-  // Detect game completion and show celebration
-  useEffect(() => {
-    if (gameState?.isComplete && !showCelebration) {
-      setShowCelebration(true);
-    }
-  }, [gameState?.isComplete, showCelebration]);
-
-  // Fetch real SUI balance (only when not in DEV_MODE)
-  const { data: balanceData } = useSuiClientQuery(
-    'getBalance',
-    { owner: realAccount?.address || '', coinType: '0x2::sui::SUI' },
-    { enabled: !DEV_MODE && !!realAccount?.address }
-  );
-
-  // Display balance based on mode
-  const displayBalance = DEV_MODE
-    ? formatSui(devBalance)
-    : balanceData?.totalBalance
-      ? (Number(balanceData.totalBalance) / 1_000_000_000).toFixed(2) + ' SUI'
-      : '0.00 SUI';
-
-  const isLoading = stateLoading || configLoading;
-  const isConfigured = CONTRACT_CONFIG.PACKAGE_ID && CONTRACT_CONFIG.TREE_GAME_ID;
-
-  const handleSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['gameState'] });
-  };
-
-  const handleCloseCelebration = () => {
-    setShowCelebration(false);
-    if (DEV_MODE) {
-      startNewRound();
-      queryClient.invalidateQueries({ queryKey: ['gameState'] });
-    }
-  };
 
   return (
     <main className="min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-lg bg-forest-900/80 border-b border-forest-600/50">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="font-bold text-2xl text-glow"><span className="text-forest-300">GROVE</span>{' '}<span className="text-blue-400">GAMES</span></span>
-            {DEV_MODE ? (
-              <span className="text-xs px-2 py-1 bg-purple-600 text-purple-100 rounded-full border border-purple-400 animate-pulse">
-                DEV MODE
-              </span>
-            ) : (
-              <span className="text-xs px-2 py-1 bg-forest-700 text-forest-200 rounded-full border border-forest-600">
-                {NETWORK}
-              </span>
+      <Header />
+
+      {/* Hero Section */}
+      <div className="max-w-6xl mx-auto px-4 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/images/hero.png"
+              alt="Grove Games"
+              width={180}
+              height={220}
+              className="drop-shadow-2xl"
+            />
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-glow mb-4">
+            <span className="text-forest-300">GROVE</span>{' '}
+            <span className="text-blue-400">GAMES</span>
+          </h1>
+          <p className="text-xl text-forest-400 max-w-2xl mx-auto">
+            The ultimate gaming hub for the SUI TREE ecosystem. Play, earn, and grow together.
+          </p>
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <a
+              href="https://tree-token.net/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-forest-700 hover:bg-forest-600 text-forest-200 rounded-full font-medium transition-all border border-forest-600"
+            >
+              Learn about TREE
+            </a>
+            {!isConnected && (
+              <div className="flex items-center gap-2">
+                {DEV_MODE ? <DevWalletSelector /> : <ConnectButton />}
+              </div>
             )}
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/docs"
-              className="px-4 py-2 text-sm font-medium text-forest-200 bg-forest-700 hover:bg-forest-600 border border-forest-600 rounded-full transition-all"
+        </motion.div>
+
+        {/* Games Grid */}
+        <div className="grid md:grid-cols-2 gap-6 mb-16">
+          {games.map((game, index) => (
+            <motion.div
+              key={game.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
             >
-              Docs
-            </Link>
-            <Link
-              href="/admin"
-              className="px-4 py-2 text-sm font-medium text-red-200 bg-red-900/50 hover:bg-red-800/50 border border-red-600/50 rounded-full transition-all"
-            >
-              Admin
-            </Link>
-            {/* Show DevWalletSelector in DEV_MODE, otherwise show real ConnectButton */}
-            {DEV_MODE ? (
-              <DevWalletSelector />
-            ) : (
-              <>
-                {realAccount && (
-                  <div className="px-3 py-1.5 text-sm font-medium text-blue-300 bg-blue-900/30 border border-blue-700/50 rounded-full">
-                    {displayBalance}
-                  </div>
-                )}
-                <ConnectButton />
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Main */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {!isConfigured && !DEV_MODE ? (
-          <div className="text-center py-16">
-            <h1 className="text-4xl font-bold mb-4 text-glow text-forest-300">Setup Required</h1>
-            <p className="text-forest-200 mb-8">
-              Deploy the contract and set environment variables.
-            </p>
-            <div className="bg-forest-800/50 rounded-xl p-6 max-w-lg mx-auto text-left font-mono text-sm border border-forest-600/50 card-glow">
-              <div className="text-forest-300">NEXT_PUBLIC_PACKAGE_ID=0x...</div>
-              <div className="text-forest-300">NEXT_PUBLIC_GAME_CONFIG_ID=0x...</div>
-              <div className="text-forest-300">NEXT_PUBLIC_TREE_GAME_ID=0x...</div>
-            </div>
-          </div>
-        ) : isLoading && !DEV_MODE ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-forest-300 border-t-transparent" />
-          </div>
-        ) : (
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Left - Tree */}
-            <div className="space-y-6">
-              <TreeVisualization
-                phase={gameState?.phase || 2}
-                phaseProgress={gameState?.phaseProgress || 50}
-              />
-              {/* Water the Tree Section */}
-              <div className="bg-forest-800/50 rounded-2xl p-6 border border-forest-600/50 card-glow">
-                <h3 className="font-bold text-lg mb-4 text-forest-300 text-center">Water the Tree</h3>
-
-                {/* Show connect prompt if not connected */}
-                {!isConnected ? (
-                  <div className="text-center py-4">
-                    <p className="text-forest-400 mb-4">Connect a wallet to water the tree</p>
-                    {DEV_MODE ? (
-                      <DevWalletSelector />
-                    ) : (
-                      <ConnectButton />
-                    )}
-                  </div>
-                ) : (
-                  <WaterButton
-                    waterCost={gameConfig?.waterCost || BigInt(50000000)}
-                    disabled={gameConfig?.isPaused}
-                    onSuccess={handleSuccess}
-                    phase={gameState?.phase || 1}
-                  />
-                )}
-
-                {!DEV_MODE && (
-                  <div className="mt-4 pt-4 border-t border-forest-600/30 flex justify-center">
-                    <FaucetButton />
-                  </div>
-                )}
-              </div>
-
-              {/* How to Play + Mascot */}
-              <div className="bg-forest-800/50 rounded-2xl p-6 border border-forest-600/50 card-glow">
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-4 text-forest-300">How to Play</h3>
-                    <ol className="space-y-2 text-sm text-forest-200">
-                      <li>1. {DEV_MODE ? 'Select a Dev Wallet' : 'Connect your SUI wallet'}</li>
-                      <li>2. Click "Water Tree" to grow it</li>
-                      <li>3. Watch the tree progress through phases</li>
-                      <li className="text-gold-400 font-semibold">Complete the tree to win up to 40%!</li>
-                    </ol>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <Image
-                      src="/images/hero.png"
-                      alt="$TREE Mascot"
-                      width={120}
-                      height={150}
-                      className="drop-shadow-lg"
-                    />
-                  </div>
+              {game.disabled ? (
+                <div
+                  className={`relative bg-gradient-to-br ${game.color} rounded-2xl p-6 border ${game.borderColor} opacity-60 cursor-not-allowed`}
+                >
+                  <GameCardContent game={game} />
                 </div>
-              </div>
-            </div>
-
-            {/* Right - Stats & Feed */}
-            <div className="space-y-4">
-              <GameStats gameState={gameState ?? null} gameConfig={gameConfig ?? null} />
-              <LiveFeed />
-
-              {/* Dev Mode Info Panel */}
-              {DEV_MODE && (
-                <div className="bg-purple-900/30 rounded-2xl p-4 border border-purple-500/50">
-                  <h4 className="font-bold text-sm text-purple-300 mb-2">Dev Mode Active</h4>
-                  <ul className="text-xs text-purple-200 space-y-1">
-                    <li>• Using mock blockchain - no real transactions</li>
-                    <li>• 6 test wallets with 10M SUI each</li>
-                    <li>• Click +1K in header for more funds</li>
-                    <li>• Set NEXT_PUBLIC_DEV_MODE=false for real blockchain</li>
-                  </ul>
-                </div>
+              ) : (
+                <Link href={game.href}>
+                  <motion.div
+                    className={`relative bg-gradient-to-br ${game.color} rounded-2xl p-6 border ${game.borderColor} ${game.hoverBorder} transition-all cursor-pointer`}
+                    whileHover={{ scale: 1.02, y: -4 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <GameCardContent game={game} />
+                  </motion.div>
+                </Link>
               )}
-            </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Stats Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="bg-forest-800/30 rounded-2xl p-8 border border-forest-600/50"
+        >
+          <h2 className="text-2xl font-bold text-forest-300 text-center mb-8">Ecosystem Stats</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { label: 'Games Live', value: '2', icon: '🎮' },
+              { label: 'Coming Soon', value: '2+', icon: '🚀' },
+              { label: 'Network', value: 'SUI', icon: '⛓️' },
+              { label: 'Token', value: '$TREE', icon: '🌳' },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-3xl mb-2">{stat.icon}</div>
+                <div className="text-2xl font-bold text-forest-200">{stat.value}</div>
+                <div className="text-sm text-forest-500">{stat.label}</div>
+              </div>
+            ))}
           </div>
-        )}
+        </motion.div>
+
+        {/* Quick Links */}
+        <div className="mt-12 flex flex-wrap justify-center gap-4">
+          <Link
+            href="/grow"
+            className="px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-full font-medium transition-all flex items-center gap-2"
+          >
+            <span>🌳</span> Play Grow Tree
+          </Link>
+          <Link
+            href="/fortune"
+            className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-full font-medium transition-all flex items-center gap-2"
+          >
+            <span>🎰</span> Spin the Wheel
+          </Link>
+          <Link
+            href="/docs"
+            className="px-6 py-3 bg-forest-700 hover:bg-forest-600 text-forest-200 rounded-full font-medium transition-all flex items-center gap-2 border border-forest-600"
+          >
+            <span>📚</span> Read Docs
+          </Link>
+        </div>
       </div>
 
       {/* Footer */}
@@ -233,17 +206,26 @@ export default function Home() {
           </a>
         </p>
       </footer>
-
-      {/* Winner Celebration Modal */}
-      <WinnerCelebration
-        isVisible={showCelebration}
-        prizePool={gameState?.prizePool || BigInt(0)}
-        winnerAddress={gameState?.winner || ''}
-        winnerContribution={gameState?.winnerContribution || BigInt(0)}
-        totalContributions={gameState?.totalContributions || BigInt(0)}
-        onClose={handleCloseCelebration}
-      />
     </main>
   );
 }
-// Vercel deploy trigger
+
+function GameCardContent({ game }: { game: typeof games[0] }) {
+  return (
+    <>
+      <div className="absolute top-4 right-4">
+        <span className={`text-xs px-2 py-1 ${game.badgeColor} text-white rounded-full font-medium`}>
+          {game.badge}
+        </span>
+      </div>
+      <div className="text-5xl mb-4">{game.icon}</div>
+      <h3 className="text-2xl font-bold text-forest-200 mb-2">{game.title}</h3>
+      <p className="text-forest-400 text-sm leading-relaxed">{game.description}</p>
+      {!game.disabled && (
+        <div className="mt-4 flex items-center text-forest-300 text-sm font-medium">
+          Play Now <span className="ml-2">→</span>
+        </div>
+      )}
+    </>
+  );
+}

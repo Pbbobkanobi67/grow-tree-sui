@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm install)",
+      "Bash(xxd:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(sui:*)",
+      "Bash(cargo --version:*)",
+      "Bash(~/sui-cli/sui.exe:*)",
+      "Bash(printf:*)",
+      "Bash(curl:*)",
+      "Bash(tar:*)",
+      "WebFetch(domain:tree-token.net)",
+      "Bash(if not exist \"C:\\Users\\bob\\grow-tree-sui\\frontend\\public\\images\" mkdir \"C:\\Users\\bob\\grow-tree-sui\\frontend\\public\\images\")",
+      "WebSearch",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nCheckpoint: Grove Games MVP with dark forest theme\n\nFeatures:\n- Rebranded to Grove Games with forest theme\n- Animated tree visualization (seedling to full tree)\n- Phase progress indicator with CTAs\n- Water button with droplet animation\n- Docs page with $TREE mascot\n- Testnet faucet button\n- Contract deployed to SUI testnet\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(git pull:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
