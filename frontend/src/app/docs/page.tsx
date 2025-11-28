@@ -40,15 +40,43 @@ export default function DocsPage() {
           <h2 className="text-2xl font-bold text-forest-200 mb-4">How It Works</h2>
           <div className="bg-forest-800/50 rounded-2xl p-6 border border-forest-600/50 card-glow space-y-4">
             <p className="text-forest-200">
-              Tree Sui Canopy is a competitive prize pool game on the SUI blockchain. Players water a virtual tree, and the player who completes the final watering wins a share of the prize pool.
+              Grove Games is a competitive prize pool game on the SUI blockchain. Players water a virtual tree, and multiple winners share the prize pool when the tree reaches maturity.
             </p>
             <ol className="list-decimal list-inside space-y-2 text-forest-300">
               <li>Connect your SUI wallet</li>
-              <li>Click "Water Tree" to contribute to the tree's growth</li>
-              <li>Each watering costs <span className="text-gold-400">0.05 SUI</span></li>
-              <li>The tree grows through 4 phases: Seedling → Growing → Maturing → Final Stretch</li>
-              <li>The player who makes the final watering wins <span className="text-gold-400">50%</span> of the prize pool</li>
+              <li>Choose a watering tier: <span className="text-blue-400">Drip</span>, <span className="text-cyan-400">Splash</span>, or <span className="text-teal-400">Flood</span></li>
+              <li>Water the tree to grow it and increase the prize pool</li>
+              <li>The tree grows through 4 phases toward completion</li>
+              <li>When complete, prizes are distributed to multiple winners!</li>
             </ol>
+          </div>
+        </section>
+
+        {/* Watering Tiers */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-forest-200 mb-4">Watering Tiers</h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="bg-forest-800/50 rounded-xl p-4 border border-blue-500/30 card-glow">
+              <div className="text-3xl mb-2">💧</div>
+              <h3 className="font-bold text-blue-400 mb-1">Drip</h3>
+              <div className="text-gold-400 font-bold">0.05 SUI</div>
+              <div className="text-sm text-forest-400 mt-2">+1-2% progress</div>
+              <div className="text-xs text-forest-500 mt-1">Available Phase 1+</div>
+            </div>
+            <div className="bg-forest-800/50 rounded-xl p-4 border border-cyan-500/30 card-glow">
+              <div className="text-3xl mb-2">🌊</div>
+              <h3 className="font-bold text-cyan-400 mb-1">Splash</h3>
+              <div className="text-gold-400 font-bold">0.25 SUI</div>
+              <div className="text-sm text-forest-400 mt-2">+3-5% progress</div>
+              <div className="text-xs text-forest-500 mt-1">Available Phase 2+</div>
+            </div>
+            <div className="bg-forest-800/50 rounded-xl p-4 border border-teal-500/30 card-glow">
+              <div className="text-3xl mb-2">🌀</div>
+              <h3 className="font-bold text-teal-400 mb-1">Flood</h3>
+              <div className="text-gold-400 font-bold">1.00 SUI</div>
+              <div className="text-sm text-forest-400 mt-2">+6-10% progress</div>
+              <div className="text-xs text-forest-500 mt-1">Available Phase 3+</div>
+            </div>
           </div>
         </section>
 
@@ -57,19 +85,52 @@ export default function DocsPage() {
           <h2 className="text-2xl font-bold text-forest-200 mb-4">Game Phases</h2>
           <div className="grid md:grid-cols-2 gap-4">
             {[
-              { phase: 'Seedling', range: '0-30%', desc: 'The tree is just starting to grow' },
-              { phase: 'Growing', range: '30-60%', desc: 'The tree is developing roots and branches' },
-              { phase: 'Maturing', range: '60-80%', desc: 'The tree is almost fully grown' },
-              { phase: 'Final Stretch', range: '80-100%', desc: 'Hidden progress - anyone could win!' },
-            ].map(({ phase, range, desc }) => (
+              { phase: 'Seedling', range: '0-30%', desc: 'The tree sprouts - only Drip available', icon: '🌱' },
+              { phase: 'Growing', range: '30-60%', desc: 'Branches form - Splash unlocks', icon: '🌿' },
+              { phase: 'Maturing', range: '60-80%', desc: 'Almost grown - Flood unlocks', icon: '🌲' },
+              { phase: 'Final Stretch', range: '80-???%', desc: 'Mystery zone - progress hidden!', icon: '✨' },
+            ].map(({ phase, range, desc, icon }) => (
               <div key={phase} className="bg-forest-800/50 rounded-xl p-4 border border-forest-600/50 card-glow">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="font-bold text-forest-300">{phase}</span>
+                  <span className="font-bold text-forest-300">{icon} {phase}</span>
                   <span className="text-sm text-forest-400">{range}</span>
                 </div>
                 <p className="text-sm text-forest-400">{desc}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Anti-Sniping Mechanics */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-forest-200 mb-4">Anti-Sniping Mechanics</h2>
+          <div className="bg-forest-800/50 rounded-2xl p-6 border border-forest-600/50 card-glow space-y-4">
+            <p className="text-forest-300">
+              Grove Games uses several mechanics to prevent last-minute sniping and reward consistent players:
+            </p>
+            <ul className="space-y-3 text-forest-300">
+              <li className="flex items-start gap-3">
+                <span className="text-gold-400">🎭</span>
+                <div>
+                  <span className="font-bold">Mystery Percentage</span>
+                  <p className="text-sm text-forest-400">After 90%, progress shows "??%" - you won't know exactly when the tree completes!</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-gold-400">🎲</span>
+                <div>
+                  <span className="font-bold">Random Completion</span>
+                  <p className="text-sm text-forest-400">The tree completes at a random threshold between 97-103% - impossible to predict!</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-gold-400">⚖️</span>
+                <div>
+                  <span className="font-bold">Weighted Winner Prize</span>
+                  <p className="text-sm text-forest-400">The final waterer gets 25% guaranteed + up to 15% bonus based on their total contributions. Loyal players earn more!</p>
+                </div>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -79,16 +140,31 @@ export default function DocsPage() {
           <div className="bg-forest-800/50 rounded-2xl p-6 border border-forest-600/50 card-glow">
             <div className="space-y-3">
               <div className="flex justify-between items-center py-2 border-b border-forest-600/30">
-                <span className="text-forest-300">Winner (Final Waterer)</span>
-                <span className="font-bold text-gold-400">50%</span>
+                <span className="text-gold-400 flex items-center gap-2">🏆 Final Waterer</span>
+                <span className="font-bold text-gold-400">40%</span>
+              </div>
+              <div className="text-xs text-forest-500 -mt-2 mb-2 pl-7">
+                (25% guaranteed + 15% weighted by contribution)
               </div>
               <div className="flex justify-between items-center py-2 border-b border-forest-600/30">
-                <span className="text-forest-300">Treasury</span>
-                <span className="font-bold text-forest-200">25%</span>
+                <span className="text-orange-400 flex items-center gap-2">👑 Top Contributor</span>
+                <span className="font-bold text-forest-200">15%</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-forest-600/30">
+                <span className="text-purple-400 flex items-center gap-2">🎲 Random Player</span>
+                <span className="font-bold text-forest-200">5%</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-forest-600/30">
+                <span className="text-blue-400 flex items-center gap-2">🌱 Next Round Seed</span>
+                <span className="font-bold text-forest-200">20%</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-forest-600/30">
+                <span className="text-green-400 flex items-center gap-2">🏦 Treasury</span>
+                <span className="font-bold text-forest-200">10%</span>
               </div>
               <div className="flex justify-between items-center py-2">
-                <span className="text-forest-300">Next Round Pool</span>
-                <span className="font-bold text-forest-200">25%</span>
+                <span className="text-cyan-400 flex items-center gap-2">📢 Dev & Marketing</span>
+                <span className="font-bold text-forest-200">10%</span>
               </div>
             </div>
           </div>
@@ -130,20 +206,24 @@ export default function DocsPage() {
           <div className="space-y-4">
             {[
               {
-                q: 'What happens if I water during Final Stretch?',
-                a: 'During the Final Stretch phase (80-100%), the progress bar is hidden. You won\'t know how close the tree is to completion, adding excitement to every watering!',
+                q: 'What happens during Final Stretch?',
+                a: 'After 90%, the progress shows "??%" so no one knows exactly when the tree will complete. The completion threshold is randomly set between 97-103%, adding extra unpredictability!',
               },
               {
-                q: 'How much does it cost to water?',
-                a: 'Each watering costs 0.05 SUI. This amount goes directly into the prize pool.',
+                q: 'How does the weighted winner prize work?',
+                a: 'The final waterer gets 25% guaranteed, plus a share of an additional 15% based on how much they contributed to the total pool. If you contributed 50% of all waterings, you\'d get 25% + 7.5% = 32.5%!',
               },
               {
-                q: 'What if I water multiple times?',
-                a: 'You can water as many times as you want! Your total contributions are tracked on the leaderboard.',
+                q: 'Why are higher tiers locked at first?',
+                a: 'Splash unlocks at Phase 2 (30%) and Flood at Phase 3 (60%). This prevents whales from dominating early and gives everyone a fair start.',
+              },
+              {
+                q: 'How is the Random Player chosen?',
+                a: 'Any address that participated in the round has a chance to win the 5% random prize. More waterings = more chances, but even 1 watering gives you a shot!',
               },
               {
                 q: 'When does a new round start?',
-                a: 'A new round starts immediately after a winner claims the prize. 25% of the previous pool carries over.',
+                a: 'A new round starts immediately after prizes are distributed. 20% of the prize pool seeds the next round.',
               },
             ].map(({ q, a }) => (
               <div key={q} className="bg-forest-800/50 rounded-xl p-4 border border-forest-600/50 card-glow">
@@ -158,16 +238,16 @@ export default function DocsPage() {
       {/* Footer */}
       <footer className="border-t border-forest-600/50 py-8 text-center text-forest-400">
         <p>
-              Grove Games - Built on SUI Blockchain |{' '}
-              <a
-                href="https://tree-token.net/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-forest-300 hover:text-forest-200 underline transition-colors"
-              >
-                TREE Token
-              </a>
-            </p>
+          Grove Games - Built on SUI Blockchain |{' '}
+          <a
+            href="https://tree-token.net/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-forest-300 hover:text-forest-200 underline transition-colors"
+          >
+            TREE Token
+          </a>
+        </p>
       </footer>
     </main>
   );
