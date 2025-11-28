@@ -36,3 +36,4 @@ npm run dev
 - ðŸŒ±â†’ðŸŒ¿â†’ðŸŒ³â†’ðŸ”¥ Four growth phases
 - ðŸ† Winner: 50% of prize pool
 - ðŸ”„ 25% rolls to next round
+# Trigger redeploy
