@@ -10,10 +10,10 @@ import { DEV_MODE, startNewRound, resetMockState, getMockGameState } from '@/lib
 import { useDevWallet } from '@/components/DevWalletSelector';
 import { useQueryClient } from '@tanstack/react-query';
 
-// Admin wallet addresses - add your wallet here
+// Admin wallet addresses
 const ADMIN_WALLETS = [
   '0xdev1111111111111111111111111111111111111111111111111111111111111111', // Dev wallet 1 for testing
-  // Add your real admin wallet address here when going live
+  '0x9b66dfcc45d57ed624b4058f2ba52f084af2330a1145087e61ef1eaac4a7cc20', // Production admin wallet
 ];
 
 export default function AdminPage() {
