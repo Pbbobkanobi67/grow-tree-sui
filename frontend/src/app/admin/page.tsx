@@ -26,9 +26,14 @@ export default function AdminPage() {
   // Dev wallet
   const { selectedWallet: devWallet } = useDevWallet();
 
-  // Use appropriate account based on mode
-  const activeAddress = DEV_MODE ? devWallet?.address : realAccount?.address;
-  const isAdmin = activeAddress && ADMIN_WALLETS.includes(activeAddress);
+  // Check both real wallet and dev wallet for admin access
+  const realAddress = realAccount?.address;
+  const devAddress = devWallet?.address;
+  const activeAddress = realAddress || devAddress;
+
+  // Allow admin access if either wallet is in the admin list
+  const isAdmin = (realAddress && ADMIN_WALLETS.includes(realAddress)) ||
+                  (devAddress && ADMIN_WALLETS.includes(devAddress));
 
   const { data: gameState } = useGameState();
   const { data: gameConfig } = useGameConfig();
