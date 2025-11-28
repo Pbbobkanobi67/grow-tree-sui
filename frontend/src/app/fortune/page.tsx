@@ -11,10 +11,14 @@ import { formatSui } from '@/lib/constants';
 
 // Bet options in MIST (1 SUI = 1,000,000,000 MIST)
 const BET_OPTIONS = [
-  { label: '0.1 SUI', value: BigInt(100000000) },
-  { label: '0.25 SUI', value: BigInt(250000000) },
-  { label: '0.5 SUI', value: BigInt(500000000) },
-  { label: '1 SUI', value: BigInt(1000000000) },
+  { label: '0.1', value: BigInt(100000000) },
+  { label: '0.25', value: BigInt(250000000) },
+  { label: '0.5', value: BigInt(500000000) },
+  { label: '1', value: BigInt(1000000000) },
+  { label: '5', value: BigInt(5000000000) },
+  { label: '10', value: BigInt(10000000000) },
+  { label: '25', value: BigInt(25000000000) },
+  { label: '50', value: BigInt(50000000000) },
 ];
 
 export default function FortunePage() {
@@ -109,15 +113,15 @@ export default function FortunePage() {
               />
 
               {/* Bet Selection - Below Wheel */}
-              <div className="mt-10 w-full max-w-md">
-                <h3 className="font-bold text-forest-300 mb-4 text-center text-lg">Select Your Bet</h3>
-                <div className="grid grid-cols-4 gap-3">
+              <div className="mt-10 w-full max-w-xl">
+                <h3 className="font-bold text-forest-300 mb-4 text-center text-lg">Select Your Bet (SUI)</h3>
+                <div className="grid grid-cols-4 gap-2">
                   {BET_OPTIONS.map((option) => (
                     <motion.button
                       key={option.label}
                       onClick={() => !isSpinning && setSelectedBet(option.value)}
                       disabled={isSpinning}
-                      className={`px-4 py-4 rounded-xl font-bold text-lg transition-all ${
+                      className={`px-3 py-3 rounded-xl font-bold text-base transition-all ${
                         selectedBet === option.value
                           ? 'bg-gold-500 text-forest-900 shadow-lg shadow-gold-500/30'
                           : 'bg-forest-800/80 text-forest-200 hover:bg-forest-700 border border-forest-600/50'

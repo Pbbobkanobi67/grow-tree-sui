@@ -205,7 +205,7 @@ export default function DocsPage() {
             </p>
             <ol className="list-decimal list-inside space-y-2 text-forest-300">
               <li>Connect your wallet</li>
-              <li>Select your bet amount (0.1, 0.25, 0.5, or 1 SUI)</li>
+              <li>Select your bet amount (0.1 to 25 SUI)</li>
               <li>Click SPIN to spin the wheel</li>
               <li>Win based on where the wheel lands!</li>
             </ol>
