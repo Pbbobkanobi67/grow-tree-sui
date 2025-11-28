@@ -10,11 +10,17 @@ import { DEV_MODE, startNewRound, resetMockState, getMockGameState } from '@/lib
 import { useDevWallet } from '@/components/DevWalletSelector';
 import { useQueryClient } from '@tanstack/react-query';
 
-// Admin wallet addresses
+// Admin wallet addresses (lowercase for comparison)
 const ADMIN_WALLETS = [
   '0xdev1111111111111111111111111111111111111111111111111111111111111111', // Dev wallet 1 for testing
   '0x9b66dfcc45d57ed624b4058f2ba52f084af2330a1145087e61ef1eaac4a7cc20', // Production admin wallet
 ];
+
+// Helper to check if address is admin (case-insensitive)
+function isAdminWallet(address: string | undefined): boolean {
+  if (!address) return false;
+  return ADMIN_WALLETS.some(admin => admin.toLowerCase() === address.toLowerCase());
+}
 
 export default function AdminPage() {
   const queryClient = useQueryClient();
@@ -31,9 +37,13 @@ export default function AdminPage() {
   const devAddress = devWallet?.address;
   const activeAddress = realAddress || devAddress;
 
-  // Allow admin access if either wallet is in the admin list
-  const isAdmin = (realAddress && ADMIN_WALLETS.includes(realAddress)) ||
-                  (devAddress && ADMIN_WALLETS.includes(devAddress));
+  // Allow admin access if either wallet is in the admin list (case-insensitive)
+  const isAdmin = isAdminWallet(realAddress) || isAdminWallet(devAddress);
+
+  // Debug logging (remove in production)
+  console.log('Real address:', realAddress);
+  console.log('Dev address:', devAddress);
+  console.log('Is admin:', isAdmin);
 
   const { data: gameState } = useGameState();
   const { data: gameConfig } = useGameConfig();

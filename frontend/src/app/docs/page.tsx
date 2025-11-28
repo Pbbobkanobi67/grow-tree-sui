@@ -88,7 +88,7 @@ export default function DocsPage() {
               { phase: 'Seedling', range: '0-30%', desc: 'The tree sprouts - only Drip available', icon: '🌱' },
               { phase: 'Growing', range: '30-60%', desc: 'Branches form - Splash unlocks', icon: '🌿' },
               { phase: 'Maturing', range: '60-80%', desc: 'Almost grown - Flood unlocks', icon: '🌲' },
-              { phase: 'Final Stretch', range: '80-???%', desc: 'Mystery zone - progress hidden!', icon: '✨' },
+              { phase: 'Final Stretch', range: '80-100+%', desc: 'Mystery zone - progress hidden after 90%!', icon: '✨' },
             ].map(({ phase, range, desc, icon }) => (
               <div key={phase} className="bg-forest-800/50 rounded-xl p-4 border border-forest-600/50 card-glow">
                 <div className="flex justify-between items-center mb-2">
@@ -127,7 +127,14 @@ export default function DocsPage() {
                 <span className="text-gold-400">⚖️</span>
                 <div>
                   <span className="font-bold">Weighted Winner Prize</span>
-                  <p className="text-sm text-forest-400">The final waterer gets 25% guaranteed + up to 15% bonus based on their total contributions. Loyal players earn more!</p>
+                  <p className="text-sm text-forest-400">The final waterer gets 25% guaranteed + up to 15% bonus based on their contribution ratio. If you contributed 50% of the pool, you get 25% + 7.5% = 32.5%!</p>
+                </div>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-gold-400">🚫</span>
+                <div>
+                  <span className="font-bold">Tier Gating</span>
+                  <p className="text-sm text-forest-400">Higher tiers unlock as the game progresses. Splash unlocks at 30%, Flood at 60%. This prevents early whale dominance.</p>
                 </div>
               </li>
             </ul>
@@ -224,6 +231,10 @@ export default function DocsPage() {
               {
                 q: 'When does a new round start?',
                 a: 'A new round starts immediately after prizes are distributed. 20% of the prize pool seeds the next round.',
+              },
+              {
+                q: 'How does phase progress work?',
+                a: 'Each phase has its own 0-100% progress bar. Phase 1 covers 0-30% overall, Phase 2 is 30-60%, Phase 3 is 60-80%, and Phase 4 is 80-100+%. The tree completes when overall progress reaches the random threshold (97-103%).',
               },
             ].map(({ q, a }) => (
               <div key={q} className="bg-forest-800/50 rounded-xl p-4 border border-forest-600/50 card-glow">

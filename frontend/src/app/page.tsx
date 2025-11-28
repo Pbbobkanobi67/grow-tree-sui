@@ -93,6 +93,12 @@ export default function Home() {
             >
               Docs
             </Link>
+            <Link
+              href="/admin"
+              className="px-4 py-2 text-sm font-medium text-red-200 bg-red-900/50 hover:bg-red-800/50 border border-red-600/50 rounded-full transition-all"
+            >
+              Admin
+            </Link>
             {/* Show DevWalletSelector in DEV_MODE, otherwise show real ConnectButton */}
             {DEV_MODE ? (
               <DevWalletSelector />
@@ -175,7 +181,7 @@ export default function Home() {
                       <li>1. {DEV_MODE ? 'Select a Dev Wallet' : 'Connect your SUI wallet'}</li>
                       <li>2. Click "Water Tree" to grow it</li>
                       <li>3. Watch the tree progress through phases</li>
-                      <li className="text-gold-400 font-semibold">Complete the tree to win 50%!</li>
+                      <li className="text-gold-400 font-semibold">Complete the tree to win up to 40%!</li>
                     </ol>
                   </div>
                   <div className="flex-shrink-0">
