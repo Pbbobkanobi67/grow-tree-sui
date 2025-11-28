@@ -1,8 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useSuiClient } from '@mysten/dapp-kit';
 import { useQuery } from '@tanstack/react-query';
 import { CONTRACT_CONFIG } from '@/lib/constants';
+import { DEV_MODE, getMockGameState } from '@/lib/devMode';
 
 export interface GameState {
   phase: number;
@@ -19,6 +20,10 @@ export interface GameState {
   top2Amount: bigint;
   top3Address: string;
   top3Amount: bigint;
+  isComplete: boolean;
+  winner: string;
+  winnerContribution: bigint;
+  totalContributions: bigint;
 }
 
 export interface GameConfig {
@@ -30,8 +35,34 @@ export function useGameState() {
   const client = useSuiClient();
 
   return useQuery({
-    queryKey: ['gameState', CONTRACT_CONFIG.TREE_GAME_ID],
+    queryKey: ['gameState', CONTRACT_CONFIG.TREE_GAME_ID, DEV_MODE],
     queryFn: async (): Promise<GameState | null> => {
+      // DEV MODE: Return mock state
+      if (DEV_MODE) {
+        const mockState = getMockGameState();
+        return {
+          phase: mockState.phase,
+          phaseProgress: mockState.phaseProgress,
+          prizePool: mockState.prizePool,
+          round: mockState.round,
+          uniquePlayers: mockState.uniquePlayers,
+          totalWaterings: mockState.totalWaterings,
+          growthProgress: mockState.phase * 25 + Math.floor(mockState.phaseProgress / 4),
+          maturityThreshold: 100,
+          top1Address: mockState.top1Address,
+          top1Amount: mockState.top1Amount,
+          top2Address: mockState.top2Address,
+          top2Amount: mockState.top2Amount,
+          top3Address: mockState.top3Address,
+          top3Amount: mockState.top3Amount,
+          isComplete: mockState.isComplete,
+          winner: mockState.winner,
+          winnerContribution: mockState.winnerContribution,
+          totalContributions: mockState.totalContributions,
+        };
+      }
+
+      // REAL MODE: Fetch from blockchain
       if (!CONTRACT_CONFIG.TREE_GAME_ID) return null;
 
       try {
@@ -77,14 +108,18 @@ export function useGameState() {
           top2Amount: BigInt(fields.top2_amount || '0'),
           top3Address: fields.top3_address || '0x0',
           top3Amount: BigInt(fields.top3_amount || '0'),
+          isComplete: fields.is_complete || false,
+          winner: fields.winner || '',
+          winnerContribution: BigInt(fields.winner_contribution || '0'),
+          totalContributions: BigInt(fields.total_contributions || '0'),
         };
       } catch (error) {
         console.error('Failed to fetch game state:', error);
         return null;
       }
     },
-    refetchInterval: 3000,
-    enabled: !!CONTRACT_CONFIG.TREE_GAME_ID,
+    refetchInterval: DEV_MODE ? 500 : 3000, // Faster refresh in dev mode
+    enabled: DEV_MODE || !!CONTRACT_CONFIG.TREE_GAME_ID,
   });
 }
 
@@ -92,8 +127,17 @@ export function useGameConfig() {
   const client = useSuiClient();
 
   return useQuery({
-    queryKey: ['gameConfig', CONTRACT_CONFIG.GAME_CONFIG_ID],
+    queryKey: ['gameConfig', CONTRACT_CONFIG.GAME_CONFIG_ID, DEV_MODE],
     queryFn: async (): Promise<GameConfig | null> => {
+      // DEV MODE: Return mock config
+      if (DEV_MODE) {
+        return {
+          waterCost: BigInt(50000000), // 0.05 SUI
+          isPaused: false,
+        };
+      }
+
+      // REAL MODE: Fetch from blockchain
       if (!CONTRACT_CONFIG.GAME_CONFIG_ID) return null;
 
       try {
@@ -114,7 +158,7 @@ export function useGameConfig() {
         return null;
       }
     },
-    refetchInterval: 30000,
-    enabled: !!CONTRACT_CONFIG.GAME_CONFIG_ID,
+    refetchInterval: DEV_MODE ? 1000 : 30000,
+    enabled: DEV_MODE || !!CONTRACT_CONFIG.GAME_CONFIG_ID,
   });
 }

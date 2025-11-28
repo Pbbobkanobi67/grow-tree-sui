@@ -2,20 +2,29 @@
 
 import { formatSui, formatAddress } from '@/lib/constants';
 import { GameState, GameConfig } from '@/hooks/useGameState';
+import { motion } from 'framer-motion';
 
 interface GameStatsProps {
   gameState: GameState | null;
   gameConfig: GameConfig | null;
 }
 
+// Prize distribution percentages
+const PRIZE_DISTRIBUTION = [
+  { label: 'Final Waterer', percent: 40, icon: '🏆', color: 'text-gold-400' },
+  { label: 'Top Contributor', percent: 15, icon: '👑', color: 'text-orange-400' },
+  { label: 'Random Player', percent: 5, icon: '🎲', color: 'text-purple-400' },
+  { label: 'Next Round', percent: 20, icon: '🌱', color: 'text-blue-400' },
+  { label: 'Treasury', percent: 10, icon: '🏦', color: 'text-green-400' },
+  { label: 'Dev & Ads', percent: 10, icon: '📢', color: 'text-cyan-400' },
+];
+
 export function GameStats({ gameState, gameConfig }: GameStatsProps) {
   if (!gameState) {
     return <div className="animate-pulse h-48 bg-forest-800/50 rounded-xl" />;
   }
 
-  const estimatedPrize = gameConfig
-    ? (gameState.prizePool * BigInt(5000)) / BigInt(10000)
-    : BigInt(0);
+  const pool = gameState.prizePool;
 
   return (
     <div className="space-y-4">
@@ -23,10 +32,22 @@ export function GameStats({ gameState, gameConfig }: GameStatsProps) {
       <div className="bg-forest-800/50 rounded-2xl p-6 gold-glow">
         <div className="text-gold-400 font-medium mb-1">Prize Pool</div>
         <div className="text-4xl font-bold text-gold-300 text-glow-gold">
-          {formatSui(gameState.prizePool)}
+          {formatSui(pool)}
         </div>
-        <div className="text-sm text-gold-500 mt-2">
-          Winner gets: ~{formatSui(estimatedPrize)}
+
+        {/* Prize Distribution Breakdown */}
+        <div className="mt-4 space-y-2">
+          <div className="text-xs text-forest-400 mb-2">Prize Distribution:</div>
+          {PRIZE_DISTRIBUTION.slice(0, 4).map((item) => (
+            <div key={item.label} className="flex justify-between items-center text-sm">
+              <span className={`${item.color} flex items-center gap-1`}>
+                <span>{item.icon}</span> {item.label}
+              </span>
+              <span className="text-forest-300">
+                {item.percent}% (~{formatSui((pool * BigInt(item.percent)) / BigInt(100))})
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 

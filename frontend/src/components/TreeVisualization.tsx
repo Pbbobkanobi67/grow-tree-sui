@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { PHASES } from '@/lib/constants';
-import { useMemo } from 'react';
 
 interface TreeVisualizationProps {
   phase: number;
@@ -17,25 +16,206 @@ function calculateOverallProgress(phase: number, phaseProgress: number): number 
     { start: 60, end: 80 },  // Phase 3: 60-80%
     { start: 80, end: 100 }, // Phase 4: 80-100%
   ];
-
   const range = phaseRanges[phase - 1] || phaseRanges[0];
   const rangeSize = range.end - range.start;
   return range.start + (phaseProgress / 100) * rangeSize;
 }
 
-// Generate floating particles for final stretch
-function generateParticles(count: number) {
-  const particles = [];
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      id: i,
-      x: -50 + Math.random() * 100,
-      delay: Math.random() * 3,
-      duration: 2 + Math.random() * 2,
-      size: 2 + Math.random() * 3,
-    });
-  }
-  return particles;
+// Pine tree branch layer (triangular)
+function PineLayer({
+  cx,
+  y,
+  width,
+  height,
+  delay,
+  color,
+  shadowColor,
+}: {
+  cx: number;
+  y: number;
+  width: number;
+  height: number;
+  delay: number;
+  color: string;
+  shadowColor: string;
+}) {
+  return (
+    <motion.g
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.6, delay, ease: 'backOut' }}
+      style={{ transformOrigin: `${cx}px ${y + height}px` }}
+    >
+      {/* Shadow/depth layer */}
+      <polygon
+        points={`${cx} ${y}, ${cx + width / 2 + 3} ${y + height + 2}, ${cx - width / 2 - 3} ${y + height + 2}`}
+        fill={shadowColor}
+      />
+      {/* Main layer */}
+      <polygon
+        points={`${cx} ${y}, ${cx + width / 2} ${y + height}, ${cx - width / 2} ${y + height}`}
+        fill={color}
+      />
+      {/* Highlight */}
+      <polygon
+        points={`${cx} ${y}, ${cx + width / 4} ${y + height * 0.6}, ${cx - width / 6} ${y + height * 0.5}`}
+        fill="rgba(255,255,255,0.1)"
+      />
+    </motion.g>
+  );
+}
+
+// Tree trunk
+function Trunk({
+  cx,
+  topY,
+  bottomY,
+  width,
+  delay,
+}: {
+  cx: number;
+  topY: number;
+  bottomY: number;
+  width: number;
+  delay: number;
+}) {
+  return (
+    <motion.g
+      initial={{ scaleY: 0 }}
+      animate={{ scaleY: 1 }}
+      transition={{ duration: 0.8, delay, ease: 'easeOut' }}
+      style={{ transformOrigin: `${cx}px ${bottomY}px` }}
+    >
+      {/* Trunk shadow */}
+      <rect
+        x={cx - width / 2 - 2}
+        y={topY}
+        width={width + 4}
+        height={bottomY - topY}
+        fill="#3E2723"
+        rx={2}
+      />
+      {/* Main trunk */}
+      <rect
+        x={cx - width / 2}
+        y={topY}
+        width={width}
+        height={bottomY - topY}
+        fill="#5D4037"
+        rx={2}
+      />
+      {/* Trunk highlight */}
+      <rect
+        x={cx - width / 4}
+        y={topY}
+        width={width / 3}
+        height={bottomY - topY}
+        fill="#6D4C41"
+        rx={1}
+      />
+    </motion.g>
+  );
+}
+
+// Small seedling sprout
+function Seedling({ cx, groundY, progress }: { cx: number; groundY: number; progress: number }) {
+  const height = 10 + progress * 100;
+  const leafSize = 5 + progress * 30;
+
+  return (
+    <motion.g
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Stem */}
+      <motion.line
+        x1={cx}
+        y1={groundY}
+        x2={cx}
+        y2={groundY - height}
+        stroke="#2E7D32"
+        strokeWidth={2 + progress * 4}
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1 }}
+      />
+      {/* First leaves */}
+      <motion.ellipse
+        cx={cx - leafSize / 2}
+        cy={groundY - height + 5}
+        rx={leafSize * 0.4}
+        ry={leafSize * 0.8}
+        fill="#4CAF50"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1, rotate: -30 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        style={{ transformOrigin: `${cx}px ${groundY - height + 5}px` }}
+      />
+      <motion.ellipse
+        cx={cx + leafSize / 2}
+        cy={groundY - height + 5}
+        rx={leafSize * 0.4}
+        ry={leafSize * 0.8}
+        fill="#4CAF50"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1, rotate: 30 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+        style={{ transformOrigin: `${cx}px ${groundY - height + 5}px` }}
+      />
+      {/* Top sprout */}
+      <motion.ellipse
+        cx={cx}
+        cy={groundY - height - leafSize * 0.3}
+        rx={leafSize * 0.3}
+        ry={leafSize * 0.6}
+        fill="#66BB6A"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
+      />
+    </motion.g>
+  );
+}
+
+// Floating particle (pine needle or sparkle)
+function Particle({ x, delay, isFinal }: { x: number; delay: number; isFinal: boolean }) {
+  return (
+    <motion.g
+      initial={{ opacity: 0, y: 0 }}
+      animate={{
+        opacity: [0, 0.8, 0],
+        y: [-20, -60, -100],
+        x: [0, (Math.random() - 0.5) * 30],
+        rotate: [0, 360],
+      }}
+      transition={{
+        duration: 3,
+        delay,
+        repeat: Infinity,
+        ease: 'easeOut',
+      }}
+    >
+      {isFinal ? (
+        // Golden sparkle for final stretch
+        <polygon
+          points={`${x},0 ${x + 2},4 ${x + 6},4 ${x + 3},7 ${x + 4},12 ${x},9 ${x - 4},12 ${x - 3},7 ${x - 6},4 ${x - 2},4`}
+          fill="#FFD700"
+          transform={`translate(0, 100)`}
+        />
+      ) : (
+        // Pine needle
+        <ellipse
+          cx={x}
+          cy={100}
+          rx={1.5}
+          ry={4}
+          fill="#2E7D32"
+        />
+      )}
+    </motion.g>
+  );
 }
 
 export function TreeVisualization({ phase, phaseProgress }: TreeVisualizationProps) {
@@ -44,26 +224,49 @@ export function TreeVisualization({ phase, phaseProgress }: TreeVisualizationPro
   const overallProgress = calculateOverallProgress(phase, phaseProgress);
   const progress = overallProgress / 100; // 0 to 1
 
-  // Generate particles for final stretch
-  const particles = useMemo(() => isFinalStretch ? generateParticles(15) : [], [isFinalStretch]);
+  // Tree dimensions based on progress
+  const cx = 100;
+  const groundY = 145;
+  const maxTreeHeight = 110;
+  const treeHeight = maxTreeHeight * Math.min(1, progress * 1.2);
+  const trunkWidth = 8 + progress * 12;
+  const trunkHeight = 15 + progress * 25;
+  const trunkTop = groundY - trunkHeight;
 
-  // Colors
-  const leafColor = isFinalStretch ? '#d4a017' : '#34d399';
-  const leafColorDark = isFinalStretch ? '#b8860b' : '#22805a';
-  const trunkColor = '#8B4513';
-  const trunkColorDark = '#654321';
+  // Pine layer colors
+  const baseGreen = isFinalStretch ? '#1B5E20' : '#2E7D32';
+  const lightGreen = isFinalStretch ? '#2E7D32' : '#388E3C';
+  const shadowGreen = isFinalStretch ? '#0D3311' : '#1B5E20';
 
-  // Tree dimensions that grow with progress
-  const trunkHeight = 20 + progress * 100;
-  const trunkWidth = 6 + progress * 14;
-  const canopyWidth = progress * 80;
-  const canopyHeight = progress * 60;
+  // Calculate number of layers based on progress
+  const numLayers = Math.floor(progress * 6) + 1; // 1-7 layers
 
-  // Ground position
-  const groundY = 80;
+  // Generate pine layers
+  const layers = [];
+  for (let i = 0; i < Math.min(numLayers, 7); i++) {
+    const layerProgress = (i + 1) / 7;
+    const layerY = trunkTop - (i * treeHeight / 7) - 5;
+    const layerWidth = 20 + (7 - i) * 12 - (1 - progress) * 20;
+    const layerHeight = 18 + (7 - i) * 3;
+
+    if (progress > layerProgress * 0.8) {
+      layers.push({
+        y: layerY,
+        width: Math.max(10, layerWidth),
+        height: layerHeight,
+        delay: i * 0.15,
+      });
+    }
+  }
+
+  // Show seedling for very early progress
+  const showSeedling = progress < 0.15;
 
   return (
-    <div className={`relative flex flex-col items-center justify-center p-8 rounded-3xl min-h-[450px] bg-forest-800/50 border border-forest-600/50 overflow-hidden ${isFinalStretch ? 'final-stretch-glow' : 'card-glow'}`}>
+    <div className={`relative flex flex-col items-center justify-center p-6 rounded-3xl min-h-[420px] bg-gradient-to-b from-forest-900 via-forest-800 to-forest-900 border border-forest-600/50 overflow-hidden ${isFinalStretch ? 'final-stretch-glow' : 'card-glow'}`}>
+
+      {/* Forest floor gradient */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-forest-950 to-transparent" />
 
       {/* Phase Badge */}
       <div className={`absolute top-4 left-4 px-4 py-1.5 rounded-full text-sm font-medium z-10 ${isFinalStretch ? 'bg-gold-500/20 text-gold-400 border border-gold-500/50' : 'bg-forest-700/50 text-forest-300 border border-forest-600/50'}`}>
@@ -72,412 +275,153 @@ export function TreeVisualization({ phase, phaseProgress }: TreeVisualizationPro
 
       {/* Progress percentage */}
       <div className="absolute top-4 right-4 text-sm text-forest-400">
-        {Math.round(overallProgress)}%
+        {overallProgress >= 90 ? (
+          // Mystery mode after 90% - show scrambled/hidden percentage
+          <motion.span
+            className="relative inline-block font-mono text-gold-400"
+            animate={{
+              opacity: [1, 0.7, 1, 0.8, 1],
+            }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+            }}
+          >
+            <span className="relative">
+              {/* Scrambled display */}
+              <motion.span
+                animate={{
+                  opacity: [1, 0, 1, 0, 1],
+                }}
+                transition={{
+                  duration: 0.15,
+                  repeat: Infinity,
+                  repeatDelay: 1 + Math.random() * 2,
+                }}
+              >
+                ??%
+              </motion.span>
+            </span>
+          </motion.span>
+        ) : (
+          <span>{Math.round(overallProgress)}%</span>
+        )}
       </div>
 
-      {/* Floating Particles (Final Stretch) */}
-      {isFinalStretch && particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute rounded-full bg-gold-400"
-          style={{
-            left: `calc(50% + ${particle.x}px)`,
-            width: particle.size,
-            height: particle.size,
-          }}
-          initial={{ bottom: '30%', opacity: 0 }}
-          animate={{
-            bottom: ['30%', '70%'],
-            opacity: [0, 1, 1, 0],
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            repeat: Infinity,
-            ease: 'easeOut',
-          }}
+      {/* Floating particles */}
+      {progress > 0.2 && (
+        <svg className="absolute inset-0 w-full h-full pointer-events-none">
+          {[...Array(5)].map((_, i) => (
+            <Particle
+              key={i}
+              x={60 + i * 25}
+              delay={i * 0.8}
+              isFinal={isFinalStretch}
+            />
+          ))}
+        </svg>
+      )}
+
+      {/* Main Tree SVG */}
+      <svg viewBox="0 0 200 180" className="w-80 h-72">
+        {/* Ground */}
+        <ellipse
+          cx={cx}
+          cy={groundY + 5}
+          rx={60}
+          ry={8}
+          fill="#1a3d1a"
         />
-      ))}
+        <ellipse
+          cx={cx}
+          cy={groundY + 2}
+          rx={45}
+          ry={5}
+          fill="#0d260d"
+        />
 
-      {/* Tree Container */}
-      <motion.div
-        className="relative"
-        animate={{ rotate: isFinalStretch ? 0 : [-0.5, 0.5, -0.5] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <svg
-          viewBox="0 0 200 200"
-          className="w-72 h-72"
-        >
-          {/* Ground / Soil */}
-          <ellipse
-            cx="100"
-            cy={groundY + 5}
-            rx="60"
-            ry="10"
-            fill="#1a4731"
-          />
-          <ellipse
-            cx="100"
-            cy={groundY}
-            rx="50"
-            ry="8"
-            fill="#276749"
-          />
+        {showSeedling ? (
+          // Show seedling for early stage
+          <Seedling cx={cx} groundY={groundY} progress={progress * 6} />
+        ) : (
+          // Show full pine tree
+          <g>
+            {/* Trunk */}
+            <Trunk
+              cx={cx}
+              topY={trunkTop}
+              bottomY={groundY}
+              width={trunkWidth}
+              delay={0}
+            />
 
-          {/* Seedling stage (0-30%) - Animated sprout */}
-          {progress < 0.30 && (
-            <g>
-              {/* Main stem */}
-              <motion.path
-                d={`M100,${groundY} C100,${groundY - 15 - progress * 80} 100,${groundY - 20 - progress * 80} 100,${groundY - 25 - progress * 80}`}
-                stroke="#34d399"
-                strokeWidth={4 + progress * 6}
-                fill="none"
-                strokeLinecap="round"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1 }}
+            {/* Pine layers (bottom to top) */}
+            {layers.reverse().map((layer, i) => (
+              <PineLayer
+                key={i}
+                cx={cx}
+                y={layer.y}
+                width={layer.width}
+                height={layer.height}
+                delay={layer.delay}
+                color={i % 2 === 0 ? baseGreen : lightGreen}
+                shadowColor={shadowGreen}
               />
+            ))}
 
-              {/* Left leaf */}
-              <motion.ellipse
-                cx={100 - 10 - progress * 20}
-                cy={groundY - 20 - progress * 50}
-                rx={6 + progress * 18}
-                ry={4 + progress * 10}
-                fill="#34d399"
-                initial={{ scale: 0, rotate: -30 }}
-                animate={{
-                  scale: [1, 1.05, 1],
-                  rotate: [-30, -25, -30]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-                style={{ transformOrigin: 'right center' }}
-              />
-
-              {/* Right leaf */}
-              <motion.ellipse
-                cx={100 + 10 + progress * 20}
-                cy={groundY - 22 - progress * 55}
-                rx={6 + progress * 18}
-                ry={4 + progress * 10}
-                fill="#34d399"
-                initial={{ scale: 0, rotate: 30 }}
-                animate={{
-                  scale: [1, 1.05, 1],
-                  rotate: [30, 25, 30]
-                }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                style={{ transformOrigin: 'left center' }}
-              />
-
-              {/* Top bud/leaf */}
-              <motion.ellipse
-                cx="100"
-                cy={groundY - 30 - progress * 80}
-                rx={8 + progress * 20}
-                ry={6 + progress * 14}
-                fill="#22c55e"
-                initial={{ scale: 0 }}
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-
-              {/* Highlight on top bud */}
-              <motion.ellipse
-                cx={98}
-                cy={groundY - 32 - progress * 80}
-                rx={3 + progress * 8}
-                ry={2 + progress * 6}
-                fill="#4ade80"
-                opacity={0.6}
-                animate={{ opacity: [0.4, 0.7, 0.4] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-
-              {/* Small floating particles around seedling */}
-              {[0, 1, 2].map((i) => (
-                <motion.circle
-                  key={`seedling-particle-${i}`}
-                  cx={90 + i * 10}
-                  cy={groundY - 25 - progress * 50}
-                  r={2}
-                  fill="#34d399"
-                  initial={{ opacity: 0, y: 0 }}
-                  animate={{
-                    opacity: [0, 0.8, 0],
-                    y: [-10, -25, -40]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: i * 0.7
-                  }}
-                />
-              ))}
-            </g>
-          )}
-
-          {/* Growing stage (30-100%) - Full tree */}
-          {progress >= 0.30 && (
-            <g>
-              {/* Main trunk */}
-              <motion.rect
-                x={100 - trunkWidth / 2}
-                y={groundY - trunkHeight}
-                width={trunkWidth}
-                height={trunkHeight}
-                rx={trunkWidth / 4}
-                fill={trunkColor}
-                initial={false}
-                animate={{
-                  x: 100 - trunkWidth / 2,
-                  y: groundY - trunkHeight,
-                  width: trunkWidth,
-                  height: trunkHeight,
-                }}
-                transition={{ duration: 0.3 }}
-              />
-
-              {/* Trunk shading */}
-              <motion.rect
-                x={100 - trunkWidth / 2}
-                y={groundY - trunkHeight}
-                width={trunkWidth / 3}
-                height={trunkHeight}
-                rx={trunkWidth / 6}
-                fill={trunkColorDark}
-                opacity="0.3"
-                initial={false}
-                animate={{
-                  x: 100 - trunkWidth / 2,
-                  y: groundY - trunkHeight,
-                  width: trunkWidth / 3,
-                  height: trunkHeight,
-                }}
-                transition={{ duration: 0.3 }}
-              />
-
-              {/* Branches (appear after 30% progress) */}
-              {progress > 0.3 && (
-                <g>
-                  {/* Left branch */}
-                  <motion.line
-                    x1="100"
-                    y1={groundY - trunkHeight * 0.6}
-                    x2={100 - 15 - progress * 25}
-                    y2={groundY - trunkHeight * 0.7}
-                    stroke={trunkColor}
-                    strokeWidth={3 + progress * 4}
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                  {/* Right branch */}
-                  <motion.line
-                    x1="100"
-                    y1={groundY - trunkHeight * 0.5}
-                    x2={100 + 15 + progress * 25}
-                    y2={groundY - trunkHeight * 0.6}
-                    stroke={trunkColor}
-                    strokeWidth={3 + progress * 4}
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                  />
-                  {/* Upper branches (appear after 50%) */}
-                  {progress > 0.5 && (
-                    <>
-                      <motion.line
-                        x1="100"
-                        y1={groundY - trunkHeight * 0.75}
-                        x2={100 - 10 - progress * 15}
-                        y2={groundY - trunkHeight * 0.85}
-                        stroke={trunkColor}
-                        strokeWidth={2 + progress * 3}
-                        strokeLinecap="round"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 0.5 }}
-                      />
-                      <motion.line
-                        x1="100"
-                        y1={groundY - trunkHeight * 0.8}
-                        x2={100 + 10 + progress * 15}
-                        y2={groundY - trunkHeight * 0.88}
-                        stroke={trunkColor}
-                        strokeWidth={2 + progress * 3}
-                        strokeLinecap="round"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
-                      />
-                    </>
-                  )}
-                </g>
-              )}
-
-              {/* Canopy - positioned at top of trunk */}
+            {/* Tree top / Star area */}
+            {progress > 0.9 && (
               <motion.g
-                initial={false}
-                animate={{ y: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
               >
-                {/* Back layer of leaves */}
-                <motion.ellipse
-                  cx="100"
-                  cy={groundY - trunkHeight - canopyHeight * 0.3}
-                  rx={canopyWidth * 0.9}
-                  ry={canopyHeight * 0.7}
-                  fill={leafColorDark}
-                  initial={false}
-                  animate={{
-                    cx: 100,
-                    cy: groundY - trunkHeight - canopyHeight * 0.3,
-                    rx: canopyWidth * 0.9,
-                    ry: canopyHeight * 0.7,
-                  }}
-                  transition={{ duration: 0.3 }}
+                {/* Top point */}
+                <polygon
+                  points={`${cx} ${trunkTop - treeHeight - 10}, ${cx + 8} ${trunkTop - treeHeight + 5}, ${cx - 8} ${trunkTop - treeHeight + 5}`}
+                  fill={lightGreen}
                 />
-
-                {/* Main canopy */}
-                <motion.ellipse
-                  cx="100"
-                  cy={groundY - trunkHeight - canopyHeight * 0.4}
-                  rx={canopyWidth}
-                  ry={canopyHeight * 0.8}
-                  fill={leafColor}
-                  initial={false}
-                  animate={{
-                    cx: 100,
-                    cy: groundY - trunkHeight - canopyHeight * 0.4,
-                    rx: canopyWidth,
-                    ry: canopyHeight * 0.8,
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-
-                {/* Left canopy bulge */}
-                {progress > 0.4 && (
-                  <motion.ellipse
-                    cx={100 - canopyWidth * 0.5}
-                    cy={groundY - trunkHeight - canopyHeight * 0.2}
-                    rx={canopyWidth * 0.5}
-                    ry={canopyHeight * 0.5}
-                    fill={leafColor}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3 }}
+                {isFinalStretch && (
+                  // Golden glow at top for final stretch
+                  <motion.circle
+                    cx={cx}
+                    cy={trunkTop - treeHeight - 10}
+                    r={8}
+                    fill="#FFD700"
+                    opacity={0.8}
+                    animate={{
+                      opacity: [0.6, 1, 0.6],
+                      r: [6, 10, 6],
+                    }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
                   />
-                )}
-
-                {/* Right canopy bulge */}
-                {progress > 0.4 && (
-                  <motion.ellipse
-                    cx={100 + canopyWidth * 0.5}
-                    cy={groundY - trunkHeight - canopyHeight * 0.25}
-                    rx={canopyWidth * 0.45}
-                    ry={canopyHeight * 0.45}
-                    fill={leafColor}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  />
-                )}
-
-                {/* Top canopy */}
-                {progress > 0.5 && (
-                  <motion.ellipse
-                    cx="100"
-                    cy={groundY - trunkHeight - canopyHeight * 0.8}
-                    rx={canopyWidth * 0.6}
-                    ry={canopyHeight * 0.5}
-                    fill={leafColor}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                )}
-
-                {/* Highlight spots on canopy */}
-                {progress > 0.3 && (
-                  <>
-                    <motion.circle
-                      cx={100 - canopyWidth * 0.3}
-                      cy={groundY - trunkHeight - canopyHeight * 0.5}
-                      r={canopyWidth * 0.15}
-                      fill={isFinalStretch ? '#eab308' : '#6ee7b7'}
-                      opacity="0.6"
-                      animate={{ opacity: [0.4, 0.7, 0.4] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                    <motion.circle
-                      cx={100 + canopyWidth * 0.2}
-                      cy={groundY - trunkHeight - canopyHeight * 0.6}
-                      r={canopyWidth * 0.1}
-                      fill={isFinalStretch ? '#eab308' : '#6ee7b7'}
-                      opacity="0.5"
-                      animate={{ opacity: [0.3, 0.6, 0.3] }}
-                      transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-                    />
-                  </>
                 )}
               </motion.g>
+            )}
+          </g>
+        )}
 
-              {/* Glow effect for final stretch */}
-              {isFinalStretch && (
-                <motion.ellipse
-                  cx="100"
-                  cy={groundY - trunkHeight - canopyHeight * 0.4}
-                  rx={canopyWidth + 15}
-                  ry={canopyHeight + 10}
-                  fill="none"
-                  stroke="#d4a017"
-                  strokeWidth="3"
-                  opacity="0.4"
-                  animate={{
-                    opacity: [0.2, 0.5, 0.2],
-                    rx: [canopyWidth + 10, canopyWidth + 20, canopyWidth + 10],
-                    ry: [canopyHeight + 5, canopyHeight + 15, canopyHeight + 5],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              )}
+        {/* Golden aura for final stretch */}
+        {isFinalStretch && !showSeedling && (
+          <motion.ellipse
+            cx={cx}
+            cy={trunkTop - treeHeight / 2}
+            rx={50}
+            ry={60}
+            fill="none"
+            stroke="#FFD700"
+            strokeWidth={2}
+            opacity={0.3}
+            animate={{
+              opacity: [0.2, 0.4, 0.2],
+              rx: [45, 55, 45],
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        )}
+      </svg>
 
-              {/* Sparkles for final stretch */}
-              {isFinalStretch && [0, 1, 2, 3, 4, 5].map((i) => {
-                const angle = (i / 6) * Math.PI * 2;
-                const radius = canopyWidth * 0.8;
-                const cx = 100 + Math.cos(angle) * radius;
-                const cy = groundY - trunkHeight - canopyHeight * 0.4 + Math.sin(angle) * canopyHeight * 0.6;
-                return (
-                  <motion.circle
-                    key={`sparkle-${i}`}
-                    cx={cx}
-                    cy={cy}
-                    r="4"
-                    fill="#fbbf24"
-                    animate={{
-                      opacity: [0, 1, 0],
-                      scale: [0.5, 1.2, 0.5],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      delay: i * 0.25,
-                    }}
-                  />
-                );
-              })}
-            </g>
-          )}
-        </svg>
-      </motion.div>
-
-      {/* Progress Bar and Phase Indicator (hidden in final stretch) */}
+      {/* Progress Section */}
       {!isFinalStretch && (
         <div className="absolute bottom-6 left-6 right-6">
           {/* Current phase progress */}
@@ -489,9 +433,9 @@ export function TreeVisualization({ phase, phaseProgress }: TreeVisualizationPro
               {phase === 3 && 'Almost there!'})
             </span>
           </div>
-          <div className="h-3 bg-forest-700 rounded-full overflow-hidden mb-4">
+          <div className="h-2 bg-forest-700 rounded-full overflow-hidden mb-4">
             <motion.div
-              className="h-full bg-gradient-to-r from-forest-400 to-forest-300 rounded-full"
+              className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${phaseProgress}%` }}
               transition={{ duration: 0.5 }}
@@ -508,31 +452,20 @@ export function TreeVisualization({ phase, phaseProgress }: TreeVisualizationPro
             ].map((p, idx) => (
               <div key={p.num} className="flex-1 flex flex-col items-center">
                 <div className="flex items-center w-full">
-                  {/* Phase dot */}
                   <div
-                    className={`w-4 h-4 rounded-full flex-shrink-0 border-2 ${
+                    className={`w-3 h-3 rounded-full flex-shrink-0 border-2 ${
                       phase > p.num
-                        ? 'bg-forest-400 border-forest-400'
+                        ? 'bg-green-400 border-green-400'
                         : phase === p.num
-                        ? 'bg-forest-500 border-forest-300 ring-2 ring-forest-400/50'
+                        ? 'bg-green-500 border-green-300 ring-2 ring-green-400/50'
                         : 'bg-forest-800 border-forest-600'
                     }`}
                   />
-                  {/* Connecting line (not on last item) */}
                   {idx < 3 && (
-                    <div
-                      className={`h-1 flex-1 ${
-                        phase > p.num ? 'bg-forest-400' : 'bg-forest-700'
-                      }`}
-                    />
+                    <div className={`h-0.5 flex-1 ${phase > p.num ? 'bg-green-400' : 'bg-forest-700'}`} />
                   )}
                 </div>
-                {/* Phase label */}
-                <span
-                  className={`text-xs mt-1 ${
-                    phase === p.num ? 'text-forest-300 font-medium' : 'text-forest-500'
-                  }`}
-                >
+                <span className={`text-xs mt-1 ${phase === p.num ? 'text-forest-300 font-medium' : 'text-forest-500'}`}>
                   {p.name}
                 </span>
               </div>
@@ -544,11 +477,11 @@ export function TreeVisualization({ phase, phaseProgress }: TreeVisualizationPro
       {/* Final Stretch Message */}
       {isFinalStretch && (
         <motion.div
-          className="absolute bottom-8 text-center"
+          className="absolute bottom-6 text-center"
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <span className="text-2xl font-bold text-gold-400 text-glow-gold">
+          <span className="text-xl font-bold text-gold-400 text-glow-gold">
             Reach the treetop!
           </span>
         </motion.div>
