@@ -8,6 +8,7 @@ import { KenoGame } from '@/components/KenoGame';
 export default function KenoPage() {
   const [balance, setBalance] = useState(1000);
   const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [totalBet, setTotalBet] = useState(0);
   const [totalWon, setTotalWon] = useState(0);
 
   const handleBalanceChange = (delta: number) => {
@@ -15,6 +16,7 @@ export default function KenoPage() {
     if (delta < 0) {
       // Bet placed
       setGamesPlayed(prev => prev + 1);
+      setTotalBet(prev => prev + Math.abs(delta));
     } else {
       // Win
       setTotalWon(prev => prev + delta);
@@ -24,6 +26,8 @@ export default function KenoPage() {
   const addFunds = () => {
     setBalance(prev => prev + 500);
   };
+
+  const netProfit = totalWon - totalBet;
 
   return (
     <main className="min-h-screen">
@@ -65,13 +69,17 @@ export default function KenoPage() {
                 <span className="text-forest-200">{gamesPlayed}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-forest-400">Total Bet</span>
+                <span className="text-forest-200">{totalBet.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-forest-400">Total Won</span>
                 <span className={totalWon > 0 ? 'text-green-400' : 'text-forest-200'}>{totalWon.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-forest-400">Net Profit</span>
-                <span className={balance - 1000 > 0 ? 'text-green-400' : balance - 1000 < 0 ? 'text-red-400' : 'text-forest-200'}>
-                  {balance - 1000 > 0 ? '+' : ''}{(balance - 1000).toLocaleString()}
+                <span className={netProfit > 0 ? 'text-green-400' : netProfit < 0 ? 'text-red-400' : 'text-forest-200'}>
+                  {netProfit > 0 ? '+' : ''}{netProfit.toLocaleString()}
                 </span>
               </div>
             </div>
